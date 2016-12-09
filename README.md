@@ -1,6 +1,8 @@
 # electron-angular-toolkit
 ## About
 This package provides a command line tool, which is supposed to make the development of electron applications with angular2 as simple as possible.
+
+This package was tested with angular-cli@1.0.0-beta.22-1
 ## Usage
 ### Create the app
 
