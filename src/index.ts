@@ -11,6 +11,15 @@ import { Package } from './package';
 import 'core-js';
 class Main {
 
+    private static configPath = path.join(__dirname, '..', '..', 'angular-cli', 'models', 'webpack-build-common.js');
+    private static copyConfigPath = path.join(__dirname, '..', '..', 'angular-cli', 'models', 'webpack-build-common.original.js');
+
+    private static fileExists(path: string): Promise<boolean>{
+        return new Promise<boolean>((resolve, reject)=>{
+            fs.exists(path,exists=>resolve(exists));
+        });
+    }
+
     private static readFile(path: string): Promise<string>{
         return new Promise<string>((resolve, reject)=>{
             fs.readFile(path, 'utf-8', (error, data)=>{
@@ -44,17 +53,6 @@ class Main {
         await this.writeFile('package.json', JSON.stringify(packageJson, null, 2));
     }
 
-    private static readWebpackTemplate(): Promise<string> {
-        console.log('loading webpack-config template');
-        let templatePath = path.join(__dirname, '..', 'res', 'webpack.config.js.template');
-        return this.readFile(templatePath);
-    }
-
-    private static writeWebpackConfig(content: string): Promise<void> {
-        console.log('overwriting angular-cli webpack-config');
-        let webpackConfigPath = path.join('node_modules', 'angular-cli', 'models', 'webpack-build-common.js')
-        return this.writeFile(webpackConfigPath, content);
-    }
 
     private static runNgBuild(watch: boolean): Promise<void> {
         console.log('running ng build')
@@ -74,13 +72,6 @@ class Main {
                 console.log(data);
             });
         });
-    }
-
-    private static replaceExternals(webpackConfigContent: string, packageJson: Package): string {
-        console.log('adding external dependencies to the webpack-config');
-        let nativeDependencies = ['fs', 'child_process', 'electron', 'path', 'assert', 'cluster', 'crypto', 'dns', 'domain', 'events', 'http', 'https', 'net', 'os', 'process', 'punycode',
-            'querystring', 'readline', 'repl', 'stream', 'string_decoder', 'tls', 'tty', 'dgram', 'url', 'util', 'v8', 'vm', 'zlib'];
-        return webpackConfigContent.replace('{ignores}', JSON.stringify(nativeDependencies))
     }
 
     private static runElectronPacker(): Promise<string[]> {
@@ -141,6 +132,23 @@ class Main {
         await this.writeFile(targetPath, template);
     }
 
+    private static async modifyWebpackConfig(): Promise<void>{
+        console.log('modifying webpack config');
+        let originalConfig = await this.readFile(this.copyConfigPath);
+        let nativeDependencies = ['fs', 'child_process', 'electron', 'path', 'assert', 'cluster', 'crypto', 'dns', 'domain', 'events', 'http', 'https', 'net', 'os', 'process', 'punycode',
+            'querystring', 'readline', 'repl', 'stream', 'string_decoder', 'tls', 'tty', 'dgram', 'url', 'util', 'v8', 'vm', 'zlib'];
+        let externalsTemplate = await this.readFile(path.join(__dirname, '..', 'res', 'externals.template'));
+        let externals = externalsTemplate.replace('{ignores}',JSON.stringify(nativeDependencies));
+        let newConfig = originalConfig.replace(/return ?{/g,`return {\n${externals}`);
+        await this.writeFile(this.configPath, newConfig);
+    }
+
+    private static async copyWebpackConfig(): Promise<void>{
+        console.log('copying webpack config');
+        let configContent = await this.readFile(this.configPath);
+        await this.writeFile(this.copyConfigPath, configContent);
+    }
+
     private static async prepare(): Promise<void> {
         await this.installPackages();
         await this.createElectronEntryPoint();
@@ -150,10 +158,11 @@ class Main {
     }
 
     private static async build(watch: boolean): Promise<void> {
-        let webpackConfigTemplate = await this.readWebpackTemplate();
         let packageJson = await this.readPackageJson();
-        let webpackConfig = this.replaceExternals(webpackConfigTemplate, packageJson);
-        await this.writeWebpackConfig(webpackConfig);
+        if(!await this.fileExists(this.copyConfigPath)){
+            await this.copyWebpackConfig();
+        }
+        await this.modifyWebpackConfig();
         await this.runNgBuild(watch);
     }
 

@@ -1,3 +1,5 @@
+# Important!!!!
+If you are upgrading from 0.0.3 please reinstall angular-cli first
 # electron-angular-toolkit
 ## About
 This package provides a command line tool, which is supposed to make the development of electron applications with angular2 as simple as possible.
