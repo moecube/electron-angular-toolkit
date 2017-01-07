@@ -132,11 +132,14 @@ class Main {
         await this.writeFile(targetPath, template);
     }
 
-    private static async modifyWebpackConfig(): Promise<void>{
+    private static async modifyWebpackConfig(packageJson: Package): Promise<void>{
         console.log('modifying webpack config');
         let originalConfig = await this.readFile(this.copyConfigPath);
         let nativeDependencies = ['fs', 'child_process', 'electron', 'path', 'assert', 'cluster', 'crypto', 'dns', 'domain', 'events', 'http', 'https', 'net', 'os', 'process', 'punycode',
             'querystring', 'readline', 'repl', 'stream', 'string_decoder', 'tls', 'tty', 'dgram', 'url', 'util', 'v8', 'vm', 'zlib'];
+        if(packageJson.nativeModules){
+            nativeDependencies = nativeDependencies.concat(packageJson.nativeModules);
+        }
         let externalsTemplate = await this.readFile(path.join(__dirname, '..', 'res', 'externals.template'));
         let externals = externalsTemplate.replace('{ignores}',JSON.stringify(nativeDependencies));
         let newConfig = originalConfig.replace(/return ?{/g,`return {\n${externals}`);
@@ -162,7 +165,7 @@ class Main {
         if(!await this.fileExists(this.copyConfigPath)){
             await this.copyWebpackConfig();
         }
-        await this.modifyWebpackConfig();
+        await this.modifyWebpackConfig(packageJson);
         await this.runNgBuild(watch);
     }
 
