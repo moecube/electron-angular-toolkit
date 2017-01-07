@@ -59,10 +59,12 @@ class Main {
         return new Promise<void>((resolve, reject) => {
             let proc = childProcess.exec(`ng build --watch=${watch} --output-path=bundle`, { maxBuffer: 1024 * 5000 }, (error, stdout, stderror) => {
                 if (error) {
-                    reject(error);
+                    console.log(error);
+                    resolve();
                 }
                 else if (stderror) {
-                    reject(stderror);
+                    console.log(stderror);
+                    resolve();
                 }
                 else {
                     resolve();
@@ -76,7 +78,17 @@ class Main {
 
     private static runElectronPacker(): Promise<string[]> {
         console.log("running build");
-        return electronBuilder.build({});
+        let targets = undefined;
+        if(process.argv.indexOf('-w')>-1){
+            targets = electronBuilder.Platform.WINDOWS.createTarget();
+        }
+        else if(process.argv.indexOf('-l')>-1){
+            targets = electronBuilder.Platform.LINUX.createTarget();
+        }
+        else if(process.argv.indexOf('-m')>-1){
+            targets = electronBuilder.Platform.MAC.createTarget();
+        }
+        return electronBuilder.build({targets: targets});
     }
 
     private static installPackages(): Promise<void> {
