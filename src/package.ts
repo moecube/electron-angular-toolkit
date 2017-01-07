@@ -1,6 +1,7 @@
 export interface Package{
     main?: string;
-    nativeModules?: string[]
+    nativeModules?: string[];
+    dependencies?: {[name: string]: string}
     build?: {
         appId?: string;
         category?: string;

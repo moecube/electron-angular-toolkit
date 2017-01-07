@@ -1,6 +1,6 @@
 {
   "name": "electron-angular-toolkit",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A tool which helps to build electron applications with angular2",
   "main": "lib/index.js",
   "bin": "./lib/index.js",
@@ -26,8 +26,15 @@
   },
   "dependencies": {
     "@types/electron-builder": "^2.0.29",
+    "@types/mz": "0.0.30",
+    "@types/ncp": "^2.0.0",
     "core-js": "^2.4.1",
     "electron-builder": "^10.6.1",
+    "mz": "^2.6.0",
+    "ncp": "^2.0.0",
     "npm": "^4.0.3"
-  }
+  },
+   "nativeModules": [
+    "decompress"
+  ]
 }

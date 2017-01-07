@@ -57,4 +57,16 @@ will create a dist folder inside your project, which will contain the stand-alon
 Before publishing it is required to set the following fields in your package.json:
 * description
 * author
-* appId (is not required but should be used otherwise it will be "com.electron.{appname}")	
+* appId (is not required but should be used otherwise it will be "com.electron.{appname}")
+To get a build for a specific platform user -w (Windows), -l (Linux), -m (Mac)
+
+### Native modules
+Some modules have to run in the node js process, to prevent them from getting bundled into the webpack bundle you can add them to your config .json:
+```
+{
+ ...,
+ "nativeModules": [
+    "decompress"
+  ],
+  ....
+}
