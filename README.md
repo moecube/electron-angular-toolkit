@@ -1,11 +1,14 @@
 # Important!!!!
 If you are upgrading from 0.0.3 please reinstall angular-cli first
+
 # electron-angular-toolkit
+
 ## About
 This package provides a command line tool, which is supposed to make the development of electron applications with angular2 as simple as possible.
 
 This package was tested with angular-cli@1.0.0-beta.22-1
 ## Usage
+
 ### Create the app
 
 Create a new project with the angular-cli and navigate to the created folder:
@@ -61,7 +64,7 @@ Before publishing it is required to set the following fields in your package.jso
 To get a build for a specific platform user -w (Windows), -l (Linux), -m (Mac)
 
 ### Native modules
-Some modules have to run in the node js process, to prevent them from getting bundled into the webpack bundle you can add them to your config .json:
+Some modules have to run in the node js process, to prevent them from getting bundled into the webpack bundle you can add them to your package.json:
 ```
 {
  ...,
