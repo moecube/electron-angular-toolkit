@@ -12,8 +12,8 @@ import {fs} from "mz";
 import 'core-js';
 class Main {
 
-    private static configPath = path.join(__dirname, '..', '..', 'angular-cli', 'models', 'webpack-configs','common.js');
-    private static copyConfigPath = path.join(__dirname, '..', '..', 'angular-cli', 'models', 'webpack-configs','common.original.js');
+    private static configPath = path.join(__dirname, '..', '..', '@angular','cli', 'models', 'webpack-configs','common.js');
+    private static copyConfigPath = path.join(__dirname, '..', '..', '@angular','cli', 'models', 'webpack-configs','common.original.js');
 
     private static fileExists(path: string): Promise<boolean> {
         return fs.exists(path);
