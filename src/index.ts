@@ -113,15 +113,20 @@ class Main {
         if (!angularCliConfig.apps[0].assets) {
             angularCliConfig.apps[0].assets = [];
         }
-        angularCliConfig.apps[0].assets.push('electron.js');
+        var electronAsset = {glob: "**/*", input: "./electron/", output: "./"};
+        angularCliConfig.apps[0].assets.push(electronAsset);
         angularCliConfig.apps[0].outDir = "bundle";
         await fs.writeFile('.angular-cli.json', JSON.stringify(angularCliConfig, null, 2));
     }
 
     private static async createElectronEntryPoint(): Promise<void> {
         console.log('creating entry point');
+        var targetDir = path.join('src', 'electron');
+        if (!fs.existsSync(targetDir)){
+            fs.mkdirSync(targetDir);
+        }
         let sourcePath = path.join(__dirname, '..', 'res', 'electron-main.js.template');
-        let targetPath = path.join('src', 'electron/electron.js');
+        let targetPath = path.join(targetDir, 'electron.js');
         let template = await fs.readFile(sourcePath, 'utf-8');
         await fs.writeFile(targetPath, template);
     }
