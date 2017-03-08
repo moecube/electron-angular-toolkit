@@ -13,8 +13,8 @@ import * as chalk from 'chalk';
 import 'core-js';
 class Main {
 
-    private static configPath = path.join(__dirname, '..', '..', 'angular-cli', 'models', 'webpack-build-common.js');
-    private static copyConfigPath = path.join(__dirname, '..', '..', 'angular-cli', 'models', 'webpack-build-common.original.js');
+    private static configPath = path.join(__dirname, '..', '..', '@angular','cli', 'models', 'webpack-configs','common.js');
+    private static copyConfigPath = path.join(__dirname, '..', '..', '@angular','cli', 'models', 'webpack-configs','common.original.js');
 
     private static fileExists(path: string): Promise<boolean> {
         return fs.exists(path);
@@ -137,14 +137,10 @@ class Main {
 
     private static async preparePacageJson(): Promise<void> {
         console.log('preparing package.json');
-        try {
-            let packageJson: Package = await this.readPackageJson();
-            packageJson.main = 'bundle/electron-main.js';
-            packageJson.build = {
-                files: ['bundle/**/*']
-            }
-            await this.writePackageJson(packageJson);
-            console.log(chalk.green('finished preparing package.json'));
+        let packageJson: Package = await this.readPackageJson();
+        packageJson.main = 'bundle/electron.js';
+        packageJson.build = {
+            files: ['bundle/**/*']
         }
         catch (error) {
             console.log(chalk.red('failed preparing package.json'));
@@ -172,38 +168,26 @@ class Main {
 
     private static async prepareAngularCliConfig(): Promise<void> {
         console.log('preparing angular-cli.json');
-        try {
-            let angularCliConfig: AngularCliConfig = JSON.parse(await fs.readFile('angular-cli.json', 'utf-8'));
-            if (!angularCliConfig.apps[0].assets) {
-                angularCliConfig.apps[0].assets = [];
-            }
-            angularCliConfig.apps[0].assets.push('electron-main.js');
-            angularCliConfig.apps[0].outDir = "bundle";
-            await fs.writeFile('angular-cli.json', JSON.stringify(angularCliConfig, null, 2));
-            console.log(chalk.green('finished preparing angular-cli.json'));
+        let angularCliConfig: AngularCliConfig = JSON.parse(await fs.readFile('.angular-cli.json','utf-8'));
+        if (!angularCliConfig.apps[0].assets) {
+            angularCliConfig.apps[0].assets = [];
         }
-        catch (error) {
-            console.log(chalk.red('failed preparing angular-cli.json'));
-            console.log(chalk.red(error));
-            process.exit(1);
-        }
-
+        var electronAsset = {glob: "**/*", input: "./electron/", output: "./"};
+        angularCliConfig.apps[0].assets.push(electronAsset);
+        angularCliConfig.apps[0].outDir = "bundle";
+        await fs.writeFile('.angular-cli.json', JSON.stringify(angularCliConfig, null, 2));
     }
 
     private static async createElectronEntryPoint(): Promise<void> {
         console.log('creating entry point');
-        try {
-            let sourcePath = path.join(__dirname, '..', 'res', 'electron-main.js.template');
-            let targetPath = path.join('src', 'electron-main.js');
-            let template = await fs.readFile(sourcePath, 'utf-8');
-            await fs.writeFile(targetPath, template);
-            console.log(chalk.green('finished creating entry point'));
+        var targetDir = path.join('src', 'electron');
+        if (!fs.existsSync(targetDir)){
+            fs.mkdirSync(targetDir);
         }
-        catch (error) {
-            console.log(chalk.red('failed creating entry point'));
-            console.log(chalk.red(error));
-            process.exit(1);
-        }
+        let sourcePath = path.join(__dirname, '..', 'res', 'electron-main.js.template');
+        let targetPath = path.join(targetDir, 'electron.js');
+        let template = await fs.readFile(sourcePath, 'utf-8');
+        await fs.writeFile(targetPath, template);
     }
 
     private static async modifyWebpackConfig(packageJson: Package): Promise<void> {
