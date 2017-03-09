@@ -135,7 +135,7 @@ class Main {
 
     }
 
-    private static async preparePacageJson(): Promise<void> {
+    private static async preparePackageJson(): Promise<void> {
         console.log('preparing package.json');
         try{
             let packageJson: Package = await this.readPackageJson();
@@ -255,7 +255,7 @@ class Main {
     private static async prepare(): Promise<void> {
         await this.installRequiredPackages();
         await this.createElectronEntryPoint();
-        await this.preparePacageJson();
+        await this.preparePackageJson();
         await this.prepareIndexHtml();
         await this.prepareAngularCliConfig();
     }
