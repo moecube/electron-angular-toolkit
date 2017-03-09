@@ -137,10 +137,14 @@ class Main {
 
     private static async preparePacageJson(): Promise<void> {
         console.log('preparing package.json');
-        let packageJson: Package = await this.readPackageJson();
-        packageJson.main = 'bundle/electron.js';
-        packageJson.build = {
-            files: ['bundle/**/*']
+        try{
+            let packageJson: Package = await this.readPackageJson();
+            packageJson.main = 'bundle/electron.js';
+            packageJson.build = {
+                files: ['bundle/**/*']
+            }
+            await this.writePackageJson(packageJson);
+            console.log(chalk.green('finished preparing package.json'));
         }
         catch (error) {
             console.log(chalk.red('failed preparing package.json'));
