@@ -15,6 +15,7 @@ class Main {
 
     private static configPath = path.join(__dirname, '..', '..', '@angular','cli', 'models', 'webpack-configs','common.js');
     private static copyConfigPath = path.join(__dirname, '..', '..', '@angular','cli', 'models', 'webpack-configs','common.original.js');
+    private static angularCliJsonPath = '.angular-cli.json';
 
     private static fileExists(path: string): Promise<boolean> {
         return fs.exists(path);
@@ -172,14 +173,14 @@ class Main {
 
     private static async prepareAngularCliConfig(): Promise<void> {
         console.log('preparing angular-cli.json');
-        let angularCliConfig: AngularCliConfig = JSON.parse(await fs.readFile('.angular-cli.json','utf-8'));
+        let angularCliConfig: AngularCliConfig = JSON.parse(await fs.readFile(this.angularCliJsonPath,'utf-8'));
         if (!angularCliConfig.apps[0].assets) {
             angularCliConfig.apps[0].assets = [];
         }
         var electronAsset = {glob: "**/*", input: "./electron/", output: "./"};
         angularCliConfig.apps[0].assets.push(electronAsset);
         angularCliConfig.apps[0].outDir = "bundle";
-        await fs.writeFile('.angular-cli.json', JSON.stringify(angularCliConfig, null, 2));
+        await fs.writeFile(this.angularCliJsonPath, JSON.stringify(angularCliConfig, null, 2));
     }
 
     private static async createElectronEntryPoint(): Promise<void> {

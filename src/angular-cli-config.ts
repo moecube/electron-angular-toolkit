@@ -1,7 +1,8 @@
+import {AssetDefinition} from "./asset-definition";
 export interface AngularCliConfig{
 
     apps?: {
-        assets?: string[];
+        assets?: (string | AssetDefinition)[];
         outDir?: string;
     }[];
 
