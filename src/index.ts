@@ -232,24 +232,25 @@ class Main {
     }
 
     private static async installNativeDependenciesIntoBuild(packageJson: Package): Promise<void> {
-        console.log(`installing native dependencies`);
-         let packagesToInstall: string[] = [];
-        try {
-            await fs.mkdir(path.join(process.cwd(), 'bundle', 'node_modules'));
-            for (let packageName of packageJson.nativeModules) {
-                packagesToInstall.push(`${packageName}@${packageJson.dependencies[packageName]}`);
+        if(packageJson.nativeModules){
+            console.log(`installing native dependencies`);
+            let packagesToInstall: string[] = [];
+            try {
+                await fs.mkdir(path.join(process.cwd(), 'bundle', 'node_modules'));
+                for (let packageName of packageJson.nativeModules) {
+                    packagesToInstall.push(`${packageName}@${packageJson.dependencies[packageName]}`);
+                }
+                process.chdir('bundle');
+                await this.npmInstall(packagesToInstall, false);
+                process.chdir('..');
+                console.log(chalk.green('finished installing native dependencies'));
             }
-            process.chdir('bundle');
-            await this.npmInstall(packagesToInstall, false);
-            process.chdir('..');
-            console.log(chalk.green('finished installing native dependencies'));
-
-        }
-        catch (error) {
-            console.log(chalk.red('failed installing native dependencies'));
-            console.log(chalk.red(error));
-            console.log(chalk.red(`packages: ${packagesToInstall.join(', ')}`));
-            process.exit(1);
+            catch (error) {
+                console.log(chalk.red('failed installing native dependencies'));
+                console.log(chalk.red(error));
+                console.log(chalk.red(`packages: ${packagesToInstall.join(', ')}`));
+                process.exit(1);
+            }
         }
     }
 
