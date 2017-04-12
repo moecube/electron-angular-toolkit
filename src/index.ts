@@ -7,7 +7,6 @@ import * as console from 'console';
 import * as npm from 'npm';
 import * as process from 'process';
 import { Package } from './package';
-import { ncp } from "ncp";
 import { fs } from "mz";
 import * as chalk from 'chalk';
 import 'core-js';
@@ -30,7 +29,7 @@ class Main {
             return JSON.parse(string);
         }
         catch (ex) {
-            console.log(chalk.red('failed reading package.json'))
+            console.log(chalk.red('failed reading package.json'));
             console.log(chalk.red(ex));
             process.exit(1);
         }
@@ -52,8 +51,8 @@ class Main {
 
 
     private static runNgBuild(watch: boolean): Promise<void> {
-        console.log('running ng build')
-        return new Promise<void>((resolve, reject) => {
+        console.log('running ng build');
+        return new Promise<void>((resolve) => {
             let proc = childProcess.exec(`ng build --watch=${watch} --output-path=bundle`, { maxBuffer: 1024 * 5000 }, (error, stdout, stderror) => {
                 if (error) {
                     console.log(chalk.red('ng build failed'));
@@ -104,9 +103,9 @@ class Main {
     private static npmInstall(packages: string[], dev: boolean): Promise<void> {
         console.log('running npm install');
         let options = dev ? { 'save-dev': true } : { 'save': true };
-        return new Promise<void>((resolve, reject) => {
-            npm.load(options, (error) => {
-                npm.commands.install(packages, (error, data) => {
+        return new Promise<void>((resolve) => {
+            npm.load(options, () => {
+                npm.commands.install(packages, (error) => {
                     if (error) {
                         console.log(chalk.red('npm install failed'));
                         console.log(chalk.red(`packages: ${packages.join(', ')}`));
@@ -143,7 +142,7 @@ class Main {
             packageJson.main = 'bundle/electron.js';
             packageJson.build = {
                 files: ['bundle/**/*']
-            }
+            };
             await this.writePackageJson(packageJson);
             console.log(chalk.green('finished preparing package.json'));
         }
@@ -177,7 +176,7 @@ class Main {
         if (!angularCliConfig.apps[0].assets) {
             angularCliConfig.apps[0].assets = [];
         }
-        var electronAsset = {glob: "**/*", input: "./electron/", output: "./"};
+        let electronAsset = {glob: "**/*", input: "./electron/", output: "./"};
         angularCliConfig.apps[0].assets.push(electronAsset);
         angularCliConfig.apps[0].outDir = "bundle";
         await fs.writeFile(this.angularCliJsonPath, JSON.stringify(angularCliConfig, null, 2));
@@ -185,7 +184,7 @@ class Main {
 
     private static async createElectronEntryPoint(): Promise<void> {
         console.log('creating entry point');
-        var targetDir = path.join('src', 'electron');
+        let targetDir = path.join('src', 'electron');
         if (!fs.existsSync(targetDir)){
             fs.mkdirSync(targetDir);
         }
@@ -237,9 +236,9 @@ class Main {
             let packagesToInstall: string[] = [];
             try {
                 await fs.mkdir(path.join(process.cwd(), 'bundle', 'node_modules'));
-                for (let packageName of packageJson.nativeModules) {
-                    packagesToInstall.push(`${packageName}@${packageJson.dependencies[packageName]}`);
-                }
+                packageJson.nativeModules
+                    .filter(name=>packageJson.dependencies[name] != undefined)
+                    .forEach(name=>packagesToInstall.push(`${name}@${packageJson.dependencies[name]}`));
                 process.chdir('bundle');
                 await this.npmInstall(packagesToInstall, false);
                 process.chdir('..');
@@ -285,7 +284,7 @@ class Main {
                     await this.prepare();
                     break;
                 case 'build':
-                    let watch: boolean = process.argv[3] == '-w'
+                    let watch: boolean = process.argv[3] == '-w';
                     await this.build(watch);
                     break;
                 case 'publish':
