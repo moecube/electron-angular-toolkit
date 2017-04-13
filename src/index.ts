@@ -291,7 +291,7 @@ class Main {
                     await this.publish();
                     break;
                 default:
-                    throw new Error('Invalid command');
+                   throw new Error('Invalid command');
             }
         }
         catch (error) {
