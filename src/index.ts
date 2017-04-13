@@ -143,6 +143,8 @@ class Main {
             packageJson.build = {
                 files: ['bundle/**/*']
             };
+            packageJson.scripts["build"] = "node_modules/.bin/electron-angular-toolkit build";
+            packageJson.scripts["run"] = "build && electron .";
             await this.writePackageJson(packageJson);
             console.log(chalk.green('finished preparing package.json'));
         }
