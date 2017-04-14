@@ -29,7 +29,7 @@ class Main {
             return JSON.parse(string);
         }
         catch (ex) {
-            console.log(chalk.red('failed reading package.json'));
+            console.log(chalk.red('failed reading package.json '));
             console.log(chalk.red(ex));
             process.exit(1);
         }
