@@ -34,11 +34,13 @@ async function main() {
   let originalConfig = await fs.readFile(copyConfigPath, 'utf-8');
 
   let newConfig = originalConfig.replace(/return ?{/, `return {
-    target: 'electron-renderer',
-    externals: ${JSON.stringify(externals)}
+        target: 'electron-renderer',
+        externals: ${JSON.stringify(externals)},
   `);
 
   await fs.writeFile(configPath, newConfig);
 
 }
+
+main()
 
