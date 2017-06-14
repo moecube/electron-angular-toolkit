@@ -31,16 +31,22 @@ async function main() {
     await fs.copy(configPath, copyConfigPath);
   }
 
+  // TODO: allow custom
+  let providers = { 'jQuery': 'jquery', 'Tether': 'tether' };
+
   let originalConfig = await fs.readFile(copyConfigPath, 'utf-8');
 
-  let newConfig = originalConfig.replace(/return ?{/, `return {
+  let newConfig = originalConfig.replace('return {', `return {
         target: 'electron-renderer',
         externals: ${JSON.stringify(externals)},
+  `).replace('plugins: [', `plugins: [
+        new webpack.ProvidePlugin(${JSON.stringify(providers)}),
   `);
 
   await fs.writeFile(configPath, newConfig);
 
 }
 
-main()
+main();
+
 
