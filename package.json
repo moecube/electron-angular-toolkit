@@ -1,14 +1,16 @@
 {
-  "name": "electron-angular-toolkit",
-  "version": "0.0.9",
+  "name": "angular-webpack-config",
+  "version": "0.0.10",
   "description": "A tool which helps to build electron applications with angular2",
-  "main": "lib/index.js",
-  "bin": "./lib/index.js",
   "keywords": [
     "electron",
     "angular2",
-    "electron-builder"
+    "angular-cli",
+    "webpack"
   ],
+  "scripts": {
+    "postinstall": "patch ../node_modules/@angular/cli/models/webpack-configs/common.js config.diff"
+  },
   "author": "Cedric Krause",
   "license": "MIT",
   "repository": {
@@ -16,11 +18,9 @@
     "url": "https://github.com/Cedware/electron-angular-toolkit.git"
   },
   "dependencies": {
-    "fs-extra": "^3.0.1"
+    "deepmerge": "^1.5.0"
   },
-  "devDependencies": {
-    "@types/fs-extra": "^3.0.3",
-    "@types/node": "^7.0.31",
-    "typescript": "^2.3.4"
+  "peerDependencies": {
+    "@angular/cli": "*"
   }
 }
