@@ -9,7 +9,7 @@
     "webpack"
   ],
   "scripts": {
-    "postinstall": "cd .. && patch --forward @angular/cli/models/webpack-configs/common.js angular-webpack-config/config.diff"
+    "postinstall": "cd .. && patch --force @angular/cli/models/webpack-configs/common.js angular-webpack-config/config.diff"
   },
   "author": "Cedric Krause",
   "license": "MIT",
