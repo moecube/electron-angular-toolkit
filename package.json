@@ -9,7 +9,7 @@
     "webpack"
   ],
   "scripts": {
-    "postinstall": "patch ../node_modules/@angular/cli/models/webpack-configs/common.js config.diff"
+    "postinstall": "pwd"
   },
   "author": "Cedric Krause",
   "license": "MIT",
